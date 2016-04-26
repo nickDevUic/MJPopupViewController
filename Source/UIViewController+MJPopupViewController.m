@@ -134,7 +134,8 @@ static void * const keypath = (void*)&keypath;
     dismissButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     dismissButton.backgroundColor = [UIColor clearColor];
     dismissButton.frame = sourceView.bounds;
-    [overlayView addSubview:dismissButton];
+    //Mark by Nick - Disable Background clickable function
+    //[overlayView addSubview:dismissButton];
     
     popupView.alpha = 0.0f;
     [overlayView addSubview:popupView];
