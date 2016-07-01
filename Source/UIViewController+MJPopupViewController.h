@@ -20,6 +20,7 @@ typedef enum {
     MJPopupViewAnimationSlideLeftRight,
     MJPopupViewAnimationSlideRightLeft,
     MJPopupViewAnimationSlideRightRight,
+    MJPopupViewAnimationNone
 } MJPopupViewAnimation;
 
 @interface UIViewController (MJPopupViewController)
