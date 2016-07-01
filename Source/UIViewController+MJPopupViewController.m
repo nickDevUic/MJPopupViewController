@@ -80,6 +80,10 @@ static void * const keypath = (void*)&keypath;
             [self slideViewOut:popupView sourceView:sourceView overlayView:overlayView withAnimationType:animationType];
             break;
             
+        case MJPopupViewAnimationNone:
+            [self viewOut:popupView sourceView:sourceView overlayView:overlayView];
+            break;
+            
         default:
             [self fadeViewOut:popupView sourceView:sourceView overlayView:overlayView];
             break;
@@ -154,6 +158,11 @@ static void * const keypath = (void*)&keypath;
             dismissButton.tag = animationType;
             [self slideViewIn:popupView sourceView:sourceView overlayView:overlayView withAnimationType:animationType];
             break;
+            
+        case MJPopupViewAnimationNone:
+            [self viewIn:popupView sourceView:sourceView overlayView:overlayView];
+            break;
+        
         default:
             dismissButton.tag = MJPopupViewAnimationFade;
             [self fadeViewIn:popupView sourceView:sourceView overlayView:overlayView];
@@ -187,6 +196,8 @@ static void * const keypath = (void*)&keypath;
             case MJPopupViewAnimationSlideRightRight:
                 [self dismissPopupViewControllerWithanimationType:dismissButton.tag];
                 break;
+            case MJPopupViewAnimationNone::
+                [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationNone];
             default:
                 [self dismissPopupViewControllerWithanimationType:MJPopupViewAnimationFade];
                 break;
@@ -356,6 +367,48 @@ static void * const keypath = (void*)&keypath;
             [self setDismissedCallback:nil];
         }
     }];
+}
+
+#pragma mark --- None
+
+- (void)viewIn:(UIView*)popupView sourceView:(UIView*)sourceView overlayView:(UIView*)overlayView
+{
+    // Generating Start and Stop Positions
+    CGSize sourceSize = sourceView.bounds.size;
+    CGSize popupSize = popupView.bounds.size;
+    CGRect popupEndRect = CGRectMake((sourceSize.width - popupSize.width) / 2,
+                                     (sourceSize.height - popupSize.height) / 2,
+                                     popupSize.width,
+                                     popupSize.height);
+    
+    // Set starting properties
+    popupView.frame = popupEndRect;
+    popupView.alpha = 0.0f;
+    
+    [self.mj_popupViewController viewWillAppear:NO];
+    self.mj_popupBackgroundView.alpha = 0.5f;
+    popupView.alpha = 1.0f;
+    [self.mj_popupViewController viewDidAppear:NO];
+}
+
+- (void)viewOut:(UIView*)popupView sourceView:(UIView*)sourceView overlayView:(UIView*)overlayView
+{
+    
+    [self.mj_popupViewController viewWillDisappear:NO];
+    self.mj_popupBackgroundView.alpha = 0.0f;
+    popupView.alpha = 0.0f;
+    
+    [popupView removeFromSuperview];
+    [overlayView removeFromSuperview];
+    [self.mj_popupViewController viewDidDisappear:NO];
+    self.mj_popupViewController = nil;
+        
+    id dismissed = [self dismissedCallback];
+    if (dismissed != nil)
+    {
+        ((void(^)(void))dismissed)();
+        [self setDismissedCallback:nil];
+    }
 }
 
 #pragma mark -
